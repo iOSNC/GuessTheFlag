@@ -14,6 +14,8 @@ struct ContentView: View {
     @State private var scoreTitle = ""
     @State private var scoreShowing = false
     @State private var score = 0
+    @State private var gameOver = false
+    @State private var questionCounter = 1
     var body: some View {
         ZStack {
             RadialGradient(stops: [
@@ -46,9 +48,27 @@ struct ContentView: View {
                                 Button("Continue?") {
                                     countries.shuffle()
                                     correctAnswer = Int.random(in: 0...2)
+                                    
+                                    if questionCounter > 9 {
+                                        gameOver = true
+                                    } else {
+                                        questionCounter += 1
+                                    }
                                 }
                             }
+                            .alert("Game OVer", isPresented: $gameOver){
+                                Button("Restart") {
+                                    questionCounter = 0
+                                    score = 0
+                                }
+                                Button("Cancel") {
+                                    
+                                }
+                            } message: {
+                                Text("Game Over! Do you want to Restart?")
+                            }
                         }
+                        Text("Qestion \(questionCounter) of 10")
                     }
                 }
                 .frame(maxWidth: .infinity)
@@ -67,15 +87,16 @@ struct ContentView: View {
                 Spacer()
             }.padding()
         }
-
     }
+    
     func flagTapped(_ number: Int){
         if number == correctAnswer {
-            scoreTitle = "Correct"
-            scoreShowing = true
             score +=  1
+            scoreTitle = "Correct. Your Score now is: \(score)"
+            scoreShowing = true
+            
         } else {
-            scoreTitle = "Wrong"
+            scoreTitle = "Wrong. That's the flag of \(countries[number])"
             scoreShowing = true
         }
     }
